@@ -1,0 +1,73 @@
+:root {
+    --game-size: 300px;
+    --bg-page: #f7f7f8;
+    --game-red: #d62828;
+    --button-bg: #007bff;
+    --button-color: #ffffff;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg-page);
+    color: #111;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Главная игровая область — квадрат 300×300, по умолчанию красный и центрирован */
+#gameArea {
+    width: var(--game-size);
+    height: var(--game-size);
+    margin: 20px auto;
+    background-color: var(--game-red); /* стартовое состояние — красный */
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: background-color 180ms ease, transform 120ms ease;
+    display: block;
+}
+
+#gameArea:focus {
+    outline: 3px solid rgba(255,255,255,0.25);
+    outline-offset: 3px;
+}
+
+/* Кнопка старт/стоп — читаемая и доступная */
+#startStopButton {
+    font-size: 18px;
+    padding: 10px 22px;
+    margin: 12px 0;
+    cursor: pointer;
+    background: var(--button-bg);
+    color: var(--button-color);
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+#startStopButton:hover {
+    filter: brightness(1.05);
+}
+
+#startStopButton:active {
+    transform: translateY(1px);
+}
+
+#startStopButton:focus {
+    outline: 3px solid rgba(0,123,255,0.25);
+    outline-offset: 2px;
+}
+
+/* Текст результатов — читаемый, с небольшим запасом высоты для стабильного layout */
+#result {
+    font-size: 18px;
+    margin: 14px 0;
+    min-height: 1.2em;
+}
