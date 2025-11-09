@@ -70,4 +70,16 @@ html, body {
     font-size: 18px;
     margin: 14px 0;
     min-height: 1.2em;
+}/* Картинка результата реакции */
+.reaction-image {
+    max-width: 300px;
+    margin: 20px auto;
+    display: none; /* скрыта по умолчанию */
+}
+
+.reaction-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
