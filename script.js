@@ -1,218 +1,153 @@
-// "Светофорный Рефлекс" — логика игры
+// Логика игры "Светофорный Рефлекс" с мемными картинками "нос нос"
 (function () {
-    const gameArea = document.getElementById('gameArea');
-    const startStopButton = document.getElementById('startStopButton');
-    const result = document.getElementById('result');
-    const reactionImage = document.getElementById('reactionImage');	// Состояния игры: READY - готова к запуску (красный),
-	// WAITING - таймер до зелёного (ещё красный),
-	// CLICKABLE - зелёный, можно кликать и измерять время реакции
-	let gameState = 'READY';
+  const gameArea = document.getElementById('gameArea');
+  const startStopButton = document.getElementById('startStopButton');
+  const result = document.getElementById('result');
+  const reactionContainer = document.getElementById('reactionContainer');
 
-	let changeTimer = null;       // таймер, который переключит цвет на зелёный
-	let greenTimestamp = 0;       // момент времени (performance.now()) когда появился зелёный
+  // состояния: READY / WAITING / CLICKABLE
+  let gameState = 'READY';
+  let changeTimer = null;
+  let greenTimestamp = 0;
 
-	function cssVar(name, fallback) {
-		const v = getComputedStyle(document.documentElement).getPropertyValue(name);
-		return (v || fallback || '').trim() || fallback;
-	}
+  function cssVar(name, fallback) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return (v || fallback || '').trim() || fallback;
+  }
 
-	function setGameAreaRed() {
-		// попробуем взять переменную из CSS, иначе используем запасной цвет
-		gameArea.style.backgroundColor = cssVar('--game-red', '#d62828');
-	}
+  function setGameAreaRed() {
+    gameArea.style.backgroundColor = cssVar('--game-red', '#d62828');
+  }
+  function setGameAreaGreen() {
+    gameArea.style.backgroundColor = '#2ecc71';
+  }
 
-	function setGameAreaGreen() {
-		gameArea.style.backgroundColor = '#2ecc71';
-	}
-// "Светофорный Рефлекс" — логика игры
-(function () {
-    const gameArea = document.getElementById('gameArea');
-    const startStopButton = document.getElementById('startStopButton');
-    const result = document.getElementById('result');
-    const reactionImage = document.getElementById('reactionImage');
+  // Очистка изображений и скрытие контейнера
+  function hideReaction() {
+    reactionContainer.innerHTML = '';
+    reactionContainer.style.display = 'none';
+  }
 
-    // Состояния игры: READY - готова к запуску (красный),
-    // WAITING - таймер до зелёного (ещё красный),
-    // CLICKABLE - зелёный, можно кликать и измерять время реакции
-    let gameState = 'READY';
+  // Показ изображения(й) и сообщения в зависимости от времени реакции (ms)
+  function showReaction(rt) {
+    hideReaction();
+    // URLs изображений (те, что ты прислал раньше)
+    const imgQuick = 'https://avatars.mds.yandex.net/i?id=eed15b67527cd1ca0ba107c6c0c2e66e54d48897-6496990-images-thumbs&n=13';
+    const imgMid = 'https://avatars.mds.yandex.net/i?id=3bf7ff47ce639d426e5571f382c90079f2b67132-5277757-images-thumbs&n=13';
+    const imgSlow = 'https://avatars.mds.yandex.net/i?id=24d8807bd04ba051807a83c93fee1ce2-5234741-images-thumbs&n=13';
+    const imgExtra = 'https://avatars.mds.yandex.net/i?id=74741af1d116e0b13395ac58980309eb4f4dc56e-5607498-images-thumbs&n=13';
 
-    let changeTimer = null;       // таймер, который переключит цвет на зелёный
-    let greenTimestamp = 0;       // момент времени (performance.now()) когда появился зелёный
-
-    function cssVar(name, fallback) {
-        const v = getComputedStyle(document.documentElement).getPropertyValue(name);
-        return (v || fallback || '').trim() || fallback;
+    // Убираем лишние крайние значения: показываем нужный диапазон
+    if (rt <= 100) {
+      // очень быстро
+      result.textContent = `ВРЕМЯ: ${rt} мс — Поздравляю, вы украли все деньги с кассы! 🎉`;
+      const wrap = document.createElement('div');
+      wrap.className = 'single';
+      const img = document.createElement('img');
+      img.src = imgQuick;
+      img.alt = 'Супербыстрый Нос Нос';
+      wrap.appendChild(img);
+      reactionContainer.appendChild(wrap);
+    } else if (rt >= 200 && rt <= 500) {
+      // средняя скорость (200-500)
+      result.textContent = `ВРЕМЯ: ${rt} мс — Поздравляю, вы украли 10кг насвая! 🥳`;
+      const wrap = document.createElement('div');
+      wrap.className = 'single';
+      const img = document.createElement('img');
+      img.src = imgMid;
+      img.alt = 'Носики сбор';
+      wrap.appendChild(img);
+      reactionContainer.appendChild(wrap);
+    } else if (rt > 500 && rt <= 10000) {
+      // медленно — показываем две картинки рядом
+      result.textContent = `ВРЕМЯ: ${rt} мс — К сожалению, вы не успели украсть насвай — попробуйте ещё раз! 😅`;
+      const pair = document.createElement('div');
+      pair.className = 'pair';
+      const a = document.createElement('img');
+      a.src = imgSlow;
+      a.alt = 'Мем 1';
+      const b = document.createElement('img');
+      b.src = imgExtra;
+      b.alt = 'Мем 2';
+      pair.appendChild(a);
+      pair.appendChild(b);
+      reactionContainer.appendChild(pair);
+    } else {
+      // другой случай: просто показать время
+      result.textContent = `ВРЕМЯ: ${rt} мс`;
+      const wrap = document.createElement('div');
+      wrap.className = 'single';
+      const img = document.createElement('img');
+      img.src = imgMid;
+      img.alt = 'Носик';
+      wrap.appendChild(img);
+      reactionContainer.appendChild(wrap);
     }
 
-    function setGameAreaRed() {
-        // попробуем взять переменную из CSS, иначе используем запасной цвет
-        gameArea.style.backgroundColor = cssVar('--game-red', '#d62828');
+    // Показ контейнера
+    reactionContainer.style.display = 'block';
+  }
+
+  function resetToReady(message) {
+    clearTimeout(changeTimer);
+    changeTimer = null;
+    gameState = 'READY';
+    setGameAreaRed();
+    startStopButton.textContent = 'Начать игру';
+    if (message) result.textContent = message;
+    hideReaction();
+  }
+
+  function startGame() {
+    if (gameState !== 'READY') return;
+    gameState = 'WAITING';
+    result.textContent = 'Приготовьтесь...';
+    startStopButton.textContent = 'Остановить игру';
+
+    const delay = Math.floor(Math.random() * 3000) + 2000; // 2000..5000 ms
+    changeTimer = setTimeout(() => {
+      gameState = 'CLICKABLE';
+      setGameAreaGreen();
+      greenTimestamp = performance.now();
+      result.textContent = 'Жмите!';
+      changeTimer = null;
+    }, delay);
+  }
+
+  function stopGame() {
+    resetToReady('Игра остановлена. Нажмите "Начать игру" чтобы начать снова.');
+  }
+
+  // Обработчики
+  startStopButton.addEventListener('click', () => {
+    if (gameState === 'READY') startGame();
+    else stopGame();
+  });
+
+  gameArea.addEventListener('click', () => {
+    if (gameState === 'CLICKABLE') {
+      const rt = Math.round(performance.now() - greenTimestamp);
+      showReaction(rt);
+      // после показа результата — немного подождём и сбросим игру
+      setTimeout(() => {
+        resetToReady();
+      }, 2500);
+    } else if (gameState === 'WAITING') {
+      // слишком рано
+      clearTimeout(changeTimer);
+      changeTimer = null;
+      result.textContent = 'Слишком рано!';
+      resetToReady();
+    } else {
+      result.textContent = 'Нажмите "Начать игру" чтобы начать.';
     }
+  });
 
-    function setGameAreaGreen() {
-        gameArea.style.backgroundColor = '#2ecc71';
-    }
-
-    function showReactionImage(reactionTime) {
-        reactionImage.innerHTML = ''; // очищаем предыдущую картинку
-        const img = document.createElement('img');
-        
-        if (reactionTime <= 400) {
-            img.src = 'https://avatars.mds.yandex.net/i?id=94fb857c1f195071cb88f7a1b34aa0834c7d7b7e-4884508-images-thumbs&n=13';
-            result.textContent = `ВРЕМЯ: ${reactionTime} мс — ПО СКОРОСТИ ТЫ ДАННЫЙ ПЁС! 🚀`;
-        } else {
-            img.src = 'https://avatars.mds.yandex.net/i?id=bfb1ccea95d220098a247c522c9c57fec5cf7cf8-12488046-images-thumbs&n=13';
-            result.textContent = `ВРЕМЯ: ${reactionTime} мс — ТЫ ПЕС ХОХОД 🐌`;
-        }
-        
-        reactionImage.appendChild(img);
-        reactionImage.style.display = 'block';
-    }
-
-    function resetToReady(message) {
-        clearTimeout(changeTimer);
-        changeTimer = null;
-        gameState = 'READY';
-        setGameAreaRed();
-        startStopButton.textContent = 'Начать игру';
-        if (message) result.textContent = message;
-        reactionImage.style.display = 'none'; // скрываем картинку
-    }
-
-    function startGame() {
-        if (gameState !== 'READY') return;
-        gameState = 'WAITING';
-        result.textContent = 'Приготовьтесь...';
-        startStopButton.textContent = 'Остановить игру';
-
-        // случайная задержка 2000..5000 ms
-        const delay = Math.floor(Math.random() * 3000) + 2000;
-        changeTimer = setTimeout(() => {
-            gameState = 'CLICKABLE';
-            setGameAreaGreen();
-            greenTimestamp = performance.now();
-            result.textContent = 'Жмите!';
-            changeTimer = null;
-        }, delay);
-    }
-
-    function stopGame() {
-        resetToReady('Игра остановлена. Нажмите "Начать игру" чтобы начать снова.');
-    }
-
-    // Обработчик для кнопки запуска/остановки
-    startStopButton.addEventListener('click', () => {
-        if (gameState === 'READY') startGame();
-        else stopGame();
-    });
-
-    // Обработчик клика по игровому полю
-    gameArea.addEventListener('click', () => {
-        if (gameState === 'CLICKABLE') {
-            const rt = performance.now() - greenTimestamp;
-            const rounded = Math.round(rt);
-            showReactionImage(rounded);
-            // после успешного замера сбрасываем игру через небольшую паузу
-            setTimeout(() => resetToReady(), 2000);
-        } else if (gameState === 'WAITING') {
-            // игрок нажал слишком рано
-            clearTimeout(changeTimer);
-            changeTimer = null;
-            result.textContent = 'Слишком рано!';
-            // возвращаем в начальное состояние
-            resetToReady();
-        } else {
-            // READY — ничего не происходит, подсказка
-            result.textContent = 'Нажмите "Начать игру" чтобы начать.';
-        }
-    });
-
-    // Инициализация — убедимся, что интерфейс в корректном стартовом состоянии
-    (function init() {
-        setGameAreaRed();
-        startStopButton.textContent = 'Начать игру';
-        result.textContent = 'Нажмите "Начать игру" чтобы начать!';
-    })();
-
+  // Инициализация
+  (function init() {
+    setGameAreaRed();
+    startStopButton.textContent = 'Начать игру';
+    result.textContent = 'Нажмите "Начать игру" чтобы начать!';
+    hideReaction();
+  })();
 })();
-    function showReactionImage(reactionTime) {
-        reactionImage.innerHTML = ''; // очищаем предыдущую картинку
-        const img = document.createElement('img');
-        
-        if (reactionTime <= 400) {
-            img.src = 'https://avatars.mds.yandex.net/i?id=94fb857c1f195071cb88f7a1b34aa0834c7d7b7e-4884508-images-thumbs&n=13';
-            result.textContent = `ВРЕМЯ: ${reactionTime} мс — ПО СКОРОСТИ ТЫ ДАННЫЙ ПЁС! 🚀`;
-        } else {
-            img.src = 'https://avatars.mds.yandex.net/i?id=bfb1ccea95d220098a247c522c9c57fec5cf7cf8-12488046-images-thumbs&n=13';
-            result.textContent = `ВРЕМЯ: ${reactionTime} мс — ТЫ ПЕС ХОХОД 🐌`;
-        }
-        
-        reactionImage.appendChild(img);
-        reactionImage.style.display = 'block';
-    }
-
-    function resetToReady(message) {
-        clearTimeout(changeTimer);
-        changeTimer = null;
-        gameState = 'READY';
-        setGameAreaRed();
-        startStopButton.textContent = 'Начать игру';
-        if (message) result.textContent = message;
-        reactionImage.style.display = 'none'; // скрываем картинку
-    }	function startGame() {
-		if (gameState !== 'READY') return;
-		gameState = 'WAITING';
-		result.textContent = 'Приготовьтесь...';
-		startStopButton.textContent = 'Остановить игру';
-
-		// случайная задержка 2000..5000 ms
-		const delay = Math.floor(Math.random() * 3000) + 2000;
-		changeTimer = setTimeout(() => {
-			gameState = 'CLICKABLE';
-			setGameAreaGreen();
-			greenTimestamp = performance.now();
-			result.textContent = 'Жмите!';
-			changeTimer = null;
-		}, delay);
-	}
-
-	function stopGame() {
-		resetToReady('Игра остановлена. Нажмите "Начать игру" чтобы начать снова.');
-	}
-
-	// Обработчик для кнопки запуска/остановки
-	startStopButton.addEventListener('click', () => {
-		if (gameState === 'READY') startGame();
-		else stopGame();
-	});
-
-	// Обработчик клика по игровому полю
-	gameArea.addEventListener('click', () => {
-		if (gameState === 'CLICKABLE') {
-			const rt = performance.now() - greenTimestamp;
-			const rounded = Math.round(rt);
-			showReactionImage(rounded);
-			// после успешного замера сбрасываем игру через небольшую паузу
-			setTimeout(() => resetToReady(), 2000);
-		} else if (gameState === 'WAITING') {
-			// игрок нажал слишком рано
-			clearTimeout(changeTimer);
-			changeTimer = null;
-			result.textContent = 'Слишком рано!';
-			// возвращаем в начальное состояние
-			resetToReady();
-		} else {
-			// READY — ничего не происходит, подсказка
-			result.textContent = 'Нажмите "Начать игру" чтобы начать.';
-		}
-	});
-
-	// Инициализация — убедимся, что интерфейс в корректном стартовом состоянии
-	(function init() {
-		setGameAreaRed();
-		startStopButton.textContent = 'Начать игру';
-		result.textContent = 'Нажмите "Начать игру" чтобы начать!';
-	})();
-
-})();
-

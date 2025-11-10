@@ -1,85 +1,91 @@
 :root {
-    --game-size: 300px;
-    --bg-page: #f7f7f8;
-    --game-red: #d62828;
-    --button-bg: #007bff;
-    --button-color: #ffffff;
+  --game-size: 300px;
+  --bg-page: #f7f7f8;
+  --game-red: #d62828;
+  --button-bg: #007bff;
+  --button-color: #ffffff;
 }
 
-html, body {
-    height: 100%;
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: var(--bg-page);
-    color: #111;
+html,body {
+  height:100%;
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg-page);
+  color:#111;
 }
 
 .container {
-    max-width: 600px;
-    margin: 40px auto;
-    text-align: center;
-    padding: 20px;
+  max-width:600px;
+  margin:40px auto;
+  text-align:center;
+  padding:20px;
 }
 
-/* Главная игровая область — квадрат 300×300, по умолчанию красный и центрирован */
+/* Игровой квадрат */
 #gameArea {
-    width: var(--game-size);
-    height: var(--game-size);
-    margin: 20px auto;
-    background-color: var(--game-red); /* стартовое состояние — красный */
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    cursor: pointer;
-    transition: background-color 180ms ease, transform 120ms ease;
-    display: block;
+  width:var(--game-size);
+  height:var(--game-size);
+  margin:20px auto;
+  background-color:var(--game-red);
+  border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  cursor:pointer;
+  transition: background-color 180ms ease, transform 120ms ease;
+  display:block;
 }
 
-#gameArea:focus {
-    outline: 3px solid rgba(255,255,255,0.25);
-    outline-offset: 3px;
-}
-
-/* Кнопка старт/стоп — читаемая и доступная */
+/* Кнопка */
 #startStopButton {
-    font-size: 18px;
-    padding: 10px 22px;
-    margin: 12px 0;
-    cursor: pointer;
-    background: var(--button-bg);
-    color: var(--button-color);
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  font-size:18px;
+  padding:10px 22px;
+  margin:12px 0;
+  cursor:pointer;
+  background:var(--button-bg);
+  color:var(--button-color);
+  border:none;
+  border-radius:6px;
+  box-shadow:0 3px 8px rgba(0,0,0,0.12);
 }
 
-#startStopButton:hover {
-    filter: brightness(1.05);
-}
+#startStopButton:hover { filter:brightness(1.05); }
+#startStopButton:active { transform:translateY(1px); }
+#startStopButton:focus { outline:3px solid rgba(0,123,255,0.25); outline-offset:2px; }
 
-#startStopButton:active {
-    transform: translateY(1px);
-}
-
-#startStopButton:focus {
-    outline: 3px solid rgba(0,123,255,0.25);
-    outline-offset: 2px;
-}
-
-/* Текст результатов — читаемый, с небольшим запасом высоты для стабильного layout */
+/* Результат */
 #result {
-    font-size: 18px;
-    margin: 14px 0;
-    min-height: 1.2em;
-}/* Картинка результата реакции */
-.reaction-image {
-    max-width: 300px;
-    margin: 20px auto;
-    display: none; /* скрыта по умолчанию */
+  font-size:18px;
+  margin:14px 0;
+  min-height:1.2em;
 }
 
-.reaction-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+/* Контейнер для картинки/мема */
+.reaction-container {
+  max-width:360px;
+  margin:16px auto;
+  display:none; /* будет показываться программно */
+  text-align:center;
+}
+
+/* Одиночное изображение */
+.reaction-container .single img {
+  max-width:100%;
+  height:auto;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Две картинки рядом */
+.reaction-container .pair {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:center;
+}
+
+.reaction-container .pair img {
+  max-width:160px;
+  width:48%;
+  height:auto;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
